@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, SurfaceViewTest2Activity!</string>
+    <string name="app_name">SurfaceViewTest2</string>
+    <string name="menu_bg0_on">BG0 On</string>
+    <string name="menu_bg0_off">BG0 Off</string>
+    <string name="menu_bg1_on">BG1 On</string>
+    <string name="menu_bg1_off">BG1 Off</string>
+    <string name="menu_fix_on">FiexdSize On</string>
+    <string name="menu_enemy_on">ENEMY On</string>
+    <string name="menu_enemy_off">ENEMY Off</string>
+    <string name="menu_bgm_all_off">BGM Off</string>
+    <string name="menu_bgm_change">BGM Change</string>
+    <string name="menu_snd_off">Sound Off</string>
+    <string name="menu_snd_on">Sound On</string>
+    <string name="menu_silent">Now, Silent Mode</string>
+    <string name="menu_drawtype0">Draw Type 0</string>
+    <string name="menu_drawtype1">Draw Type 1</string>
+
+</resources>

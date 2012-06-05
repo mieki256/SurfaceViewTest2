@@ -114,6 +114,14 @@ public class GWk {
 	}
 
 	/**
+	 * タッチ情報(描画用情報も含む)をクリア
+	 */
+	public void clearTouchDrawInfo() {
+		touchX = touchY = 0;
+		drawTouchAlpha = 0;
+	}
+
+	/**
 	 * 時間の文字列を返す
 	 *
 	 * @param mills

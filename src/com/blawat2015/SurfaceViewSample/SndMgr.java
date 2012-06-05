@@ -89,10 +89,16 @@ public class SndMgr implements OnLoadCompleteListener {
 	// マナーモード判別その他を行うためにAudioManagerを用意する
 	public AudioManager audioManager;
 
-	// 消音すべきモードか否か(マナーモード等の情報)
+	/**
+	 * 消音すべきモードか否か(マナーモード等の情報).
+	 * trueならマナーモード、falseなら非マナーモード
+	 */
 	public boolean silentEnbale = false;
 
-	// サウンドが無効か否か (trueなら無効)
+	/**
+	 * サウンドが無効か否か.
+	 * trueならサウンド無効、falseならサウンド有効
+	 */
 	public boolean soundDisable = false;
 
 	/**
@@ -105,7 +111,7 @@ public class SndMgr implements OnLoadCompleteListener {
 		seLoadComplete = false;
 		testBgmIndex = 0;
 		silentEnbale = false;
-		soundDisable = false;
+		soundDisable = true;
 	}
 
 	public static SndMgr getInstance() {
@@ -125,6 +131,15 @@ public class SndMgr implements OnLoadCompleteListener {
 			// モードの切り替えがあった
 			checkBgmStatus();
 		}
+	}
+
+	/**
+	 * サウンド有効か否かを返す
+	 *
+	 * @return trueなら有効、falseなら無効
+	 */
+	public boolean isSoundEnable() {
+		return ((!silentEnbale) && (!soundDisable));
 	}
 
 	/**
@@ -183,15 +198,6 @@ public class SndMgr implements OnLoadCompleteListener {
 
 		}
 		return fg;
-	}
-
-	/**
-	 * サウンド有効か否かを返す
-	 *
-	 * @return trueなら有効、falseなら無効
-	 */
-	public boolean isSoundEnable() {
-		return ((!silentEnbale) && (!soundDisable));
 	}
 
 	/**

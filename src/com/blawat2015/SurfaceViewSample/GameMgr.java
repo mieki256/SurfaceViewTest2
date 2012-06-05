@@ -111,6 +111,7 @@ public class GameMgr {
 					tp.onUpdate();
 					enemyMgr.onUpdate();
 					if (!stgClr.onUpdate()) {
+						snd.stopBgmAll();
 						step = 2;
 					}
 				}

@@ -52,6 +52,7 @@ public class StageClear extends Task {
 
 		case 1:
 			// 画面がタッチされるまで待つ
+			TouchReq.getInstance().onUpdate();
 			if (gw.touchEnable) step++;
 			break;
 		case 2:
@@ -94,6 +95,9 @@ public class StageClear extends Task {
 			String s = "MISS: " + dispMiss + "    TIME: "
 					+ GWk.getTimeStr(gw.lastDiffMilliTime);
 			gw.drawTextWidthBorder(c, s, x, y, Color.WHITE, Color.BLACK);
+
+			// タッチ要求アイコン描画
+			TouchReq.getInstance().onDraw(c);
 		}
 	}
 }

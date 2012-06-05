@@ -169,5 +169,4 @@ public class GWk {
 		paint.setColor(fgcolor);
 		c.drawText(s, x + 0, y + 0, paint);
 	}
-
 }

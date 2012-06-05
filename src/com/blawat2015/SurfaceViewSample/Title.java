@@ -83,6 +83,9 @@ public class Title extends Task {
 		// サウンド有効無効を表示に反映
 		sndBmpId = (snd.isSoundEnable()) ? 1 : 0;
 
+		TouchReq trq = TouchReq.getInstance();
+		trq.onUpdate();
+
 		return result;
 	}
 
@@ -100,6 +103,10 @@ public class Title extends Task {
 
 		// サウンドマーク描画
 		c.drawBitmap(sndbmp[sndBmpId], SNDMARK_X, SNDMARK_Y, paint);
+
+		// タッチ要求アイコン描画
+		TouchReq trq = TouchReq.getInstance();
+		trq.onDraw(c);
 	}
 
 };

@@ -34,166 +34,7 @@ import android.view.WindowManager;
 public class SurfaceViewTest2Activity extends Activity {
 
 	GWk gw = GWk.getInstance();
-
-	// オプションメニュー関係
-	public boolean enableOpenMenu = false;
-
-	/**
-	 * タスク管理クラス
-	 */
-	public class GameMgr {
-		Bg bg0;
-		Bg bg1;
-		TouchPoint tp;
-		EnemyMgr enemyMgr;
-		DrawTouchPoint drawTp;
-		DrawFrameNumber drawFn;
-		Title title;
-		StageClear stgClr;
-		int step = 0;
-		int stepSub = 0;
-		int count = 0;
-
-		GameMgr() {
-			step = 0;
-			gw.miss = 0;
-			gw.slowMotionCount = 0;
-			gw.img = new ImgMgr();
-			gw.snd = new SndMgr();
-
-			// マナーモード等の判別用
-			gw.snd.audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-			gw.snd.checkSilentMode(); // 消音すべきモードかチェック
-		}
-
-		/**
-		 * 更新処理
-		 */
-		public boolean onUpdate() {
-			if (gw.slowMotionCount % 4 == 0) {
-
-				switch (step) {
-				case 0:
-					gw.img.loadImageRes(getResources()); // 画像読み込み
-					gw.snd.loadSoundRes(getApplicationContext()); // サウンドデータ読み込み
-					gw.levelChangeEnable = false;
-					gw.slowMotionCount = 0;
-					step++;
-					break;
-
-				case 1:
-					bg0 = new Bg(0); // BG発生
-					bg1 = new Bg(1);
-					tp = new TouchPoint(); // タッチ座標記録クラス発生
-					enemyMgr = new EnemyMgr(); // 敵発生
-					drawTp = new DrawTouchPoint(); // タッチ座標描画クラス発生
-					drawFn = new DrawFrameNumber(); // 数値表示クラス発生
-					title = new Title(); // タイトル処理クラス発生
-					stgClr = new StageClear(); // ステージクリア用タスク発生
-
-					// レイヤー描画フラグを初期化
-					for (int i = 0; i < gw.layerDrawEnable.length; i++) {
-						gw.layerDrawEnable[i] = true;
-					}
-					gw.diffMilliTime = 0;
-					gw.lastDiffMilliTime = 0;
-					step++;
-					break;
-
-				case 2:
-					// タイトル画面表示
-					if (!enableOpenMenu) {
-						bg0.onUpdate();
-						bg1.onUpdate();
-						tp.onUpdate();
-						drawFn.onUpdate();
-						if (!title.onUpdate()) {
-							gw.snd.startBgm(SndMgr.BGM_FIRST); // BGM再生開始
-							enemyMgr.init();
-							step++;
-						}
-					}
-					break;
-
-				case 3:
-					// ゲーム本編
-					if (!enableOpenMenu) {
-						boolean clearFg = false;
-
-						bg0.onUpdate();
-						bg1.onUpdate();
-						tp.onUpdate();
-						clearFg = !enemyMgr.onUpdate();
-						drawTp.onUpdate();
-						drawFn.onUpdate();
-						if (clearFg) {
-							stgClr.init(gw.miss, (int) gw.frameCounter);
-							step++;
-						}
-					}
-					break;
-
-				case 4:
-					// ステージクリア
-					if (!enableOpenMenu) {
-						bg0.onUpdate();
-						bg1.onUpdate();
-						tp.onUpdate();
-						enemyMgr.onUpdate();
-						if (!stgClr.onUpdate()) {
-							step = 2;
-						}
-					}
-					break;
-
-				default:
-					break;
-				}
-			}
-
-			// サウンド関連処理
-			gw.snd.update();
-
-			gw.slowMotionCount--;
-			if (gw.slowMotionCount < 0) gw.slowMotionCount = 0;
-
-			return true;
-		}
-
-		/**
-		 * 描画処理
-		 *
-		 * @param c
-		 *            Canvas
-		 */
-		public void onDraw(Canvas c) {
-			if (step >= 2) {
-				bg0.onDraw(c);
-				bg1.onDraw(c);
-			}
-
-			switch (step) {
-			case 2:
-				title.onDraw(c);
-				break;
-			case 3:
-				enemyMgr.onDraw(c);
-				drawTp.onDraw(c);
-				break;
-			case 4:
-				enemyMgr.onDraw(c);
-				stgClr.onDraw(c);
-				break;
-			default:
-				break;
-			}
-
-			if (step >= 2) {
-				drawFn.onDraw(c);
-			}
-		}
-
-	}
+	MySurfaceView surface;
 
 	/**
 	 * SurfaceViewのサブクラス
@@ -219,7 +60,6 @@ public class SurfaceViewTest2Activity extends Activity {
 		 */
 		public MySurfaceView(Context context) {
 			super(context);
-			// LogUtil.d("SURFACE", "MySurfaceView()");
 			init();
 		}
 
@@ -234,6 +74,8 @@ public class SurfaceViewTest2Activity extends Activity {
 		}
 
 		public void init() {
+			LogUtil.d("SURFACE", "MySurfaceView()");
+			gw.fixedSizeEnable = false;
 			holder = getHolder();
 			holder.addCallback(this);
 			holder.setSizeFromLayout();
@@ -248,6 +90,12 @@ public class SurfaceViewTest2Activity extends Activity {
 		public void surfaceCreated(SurfaceHolder holder) {
 			LogUtil.d("SURFACE", "surfaceCreaded()");
 			gameMgr = new GameMgr();
+
+			// マナーモード等の判別用
+			SndMgr snd = SndMgr.getInstance();
+			snd.audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+			snd.checkSilentMode(); // 消音すべきモードかチェック
+
 			startNow();
 		}
 
@@ -297,26 +145,26 @@ public class SurfaceViewTest2Activity extends Activity {
 		public void setScreenWH(int width, int height) {
 			gw.scrW = width;
 			gw.scrH = height;
-			gw.scaleX = ((float) gw.scrW) / ((float) GWk.defScrW);
-			gw.scaleY = ((float) gw.scrH) / ((float) GWk.defScrH);
+			gw.scaleX = ((float) gw.scrW) / ((float) GWk.DEF_SCR_W);
+			gw.scaleY = ((float) gw.scrH) / ((float) GWk.DEF_SCR_H);
 
 			// LogUtil.d("INFO", "Window w,h = " + scrW + "," + scrH);
-			// LogUtil.d("INFO", "DefWdw w,h = " + defScrW + "," + defScrH);
+			// LogUtil.d("INFO", "DefWdw w,h = " + DEF_SCR_W + "," + DEF_SCR_H);
 			// LogUtil.d("INFO", "Scale x,y = " + scaleX + "," + scaleY);
 
 			gw.screenBorderW = 0;
 			gw.screenBorderH = 0;
 			if (gw.scaleX < gw.scaleY) {
-				gw.screenBorderH = (gw.scrH * GWk.defScrW / gw.scrW)
-						- GWk.defScrH;
+				gw.screenBorderH = (gw.scrH * GWk.DEF_SCR_W / gw.scrW)
+						- GWk.DEF_SCR_H;
 				gw.scaleY = gw.scaleX;
 			} else if (gw.scaleX > gw.scaleY) {
-				gw.screenBorderW = (gw.scrW * GWk.defScrH / gw.scrH)
-						- GWk.defScrW;
+				gw.screenBorderW = (gw.scrW * GWk.DEF_SCR_H / gw.scrH)
+						- GWk.DEF_SCR_W;
 				gw.scaleX = gw.scaleY;
 			}
-			gw.virtualScrW = GWk.defScrW + gw.screenBorderW;
-			gw.virtualScrH = GWk.defScrH + gw.screenBorderH;
+			gw.virtualScrW = GWk.DEF_SCR_W + gw.screenBorderW;
+			gw.virtualScrH = GWk.DEF_SCR_H + gw.screenBorderH;
 
 			if (gw.fixedSizeEnable) {
 				holder.setFixedSize(gw.virtualScrW, gw.virtualScrH);
@@ -354,11 +202,12 @@ public class SurfaceViewTest2Activity extends Activity {
 			mExec = null;
 
 			// 画像を全て破棄する
-			gw.img.recycleImageAll();
+			ImgMgr.getInstance().recycleImageAll();
 
 			// BGMとSEを停止して破棄する
-			gw.snd.releaseBgmAll();
-			gw.snd.releaseSeAll();
+			SndMgr snd = SndMgr.getInstance();
+			snd.releaseBgmAll();
+			snd.releaseSeAll();
 		}
 
 		// 描画処理
@@ -393,7 +242,7 @@ public class SurfaceViewTest2Activity extends Activity {
 				}
 
 				// クリッピング範囲を指定
-				c.clipRect(0, 0, GWk.defScrW, GWk.defScrH);
+				c.clipRect(0, 0, GWk.DEF_SCR_W, GWk.DEF_SCR_H);
 
 				gameMgr.onDraw(c); // 各タスクの描画
 				drawFps(c); // FPS測定値描画
@@ -435,8 +284,13 @@ public class SurfaceViewTest2Activity extends Activity {
 				public void run() {
 					// この中が一定時間毎に処理される
 					// LogUtil.d("SURFACE_LOOP", "loop");
-					gameMgr.onUpdate(); // 更新処理
-					onDraw(); // 描画処理
+
+					// 更新処理
+					gameMgr.onUpdate(getResources(), getApplicationContext());
+
+					// 描画処理
+					onDraw();
+
 					gw.frameCounter++;
 					calcFPS(); // FPSを計算
 				}
@@ -492,8 +346,6 @@ public class SurfaceViewTest2Activity extends Activity {
 			if (BuildConfig.DEBUG) Log.d(tag, msg);
 		}
 	}
-
-	MySurfaceView surface = null;
 
 	/**
 	 * Activityが生成された時の処理. アプリ起動時、ここが最初に呼ばれる.
@@ -626,7 +478,7 @@ public class SurfaceViewTest2Activity extends Activity {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		enableOpenMenu = true;
+		gw.enableOpenMenu = true;
 
 		menu.findItem(MENU_ID_FIXSIZE).setVisible(!gw.fixedSizeEnable);
 
@@ -644,15 +496,16 @@ public class SurfaceViewTest2Activity extends Activity {
 				(gw.layerDrawEnable[2]) ? R.string.menu_enemy_off
 						: R.string.menu_enemy_on);
 
-		if (gw.snd.silentEnbale) {
+		SndMgr snd = SndMgr.getInstance();
+		if (snd.silentEnbale) {
 			menu.findItem(MENU_ID_SOUND).setTitle(R.string.menu_silent);
-		} else if (gw.snd.isSoundEnable()) {
+		} else if (snd.isSoundEnable()) {
 			menu.findItem(MENU_ID_SOUND).setTitle(R.string.menu_snd_off);
 		} else {
 			menu.findItem(MENU_ID_SOUND).setTitle(R.string.menu_snd_on);
 		}
 
-		gw.snd.pauseBgm();
+		snd.pauseBgm();
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -661,8 +514,8 @@ public class SurfaceViewTest2Activity extends Activity {
 	 */
 	@Override
 	public void onOptionsMenuClosed(Menu menu) {
-		enableOpenMenu = false;
-		gw.snd.restartBgm();
+		gw.enableOpenMenu = false;
+		SndMgr.getInstance().restartBgm();
 		super.onOptionsMenuClosed(menu);
 	}
 
@@ -699,17 +552,16 @@ public class SurfaceViewTest2Activity extends Activity {
 			break;
 		case MENU_ID_SOUND:
 			// サウンド有効無効を切り替える
-			gw.snd.changeSoundMode();
+			SndMgr.getInstance().changeSoundMode();
 			break;
 		case MENU_ID_BGMOFF:
 			// BGM全停止
-			gw.snd.stopBgmAll();
+			SndMgr.getInstance().stopBgmAll();
 			break;
 		case MENU_ID_BGMCHG:
 			// BGM変更
-			int n = gw.snd.getNextBgmId();
-			gw.snd.stopBgm();
-			gw.snd.startBgm(n);
+			int n = SndMgr.getInstance().getNextBgmId();
+			SndMgr.getInstance().changeBgm(n);
 			break;
 		default:
 			ret = super.onOptionsItemSelected(item);

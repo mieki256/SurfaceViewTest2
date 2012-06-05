@@ -8,6 +8,9 @@ import android.graphics.BitmapFactory;
  * 画像管理用クラス
  */
 public class ImgMgr {
+
+	private static ImgMgr instance = new ImgMgr();
+
 	// ビットマップ画像
 	public Bitmap charaImg;
 
@@ -51,9 +54,12 @@ public class ImgMgr {
 	/**
 	 * コンストラクタ
 	 */
-	public ImgMgr() {
+	private ImgMgr() {
 		bmp = new Bitmap[imgId.length];
+	}
 
+	public static ImgMgr getInstance() {
+		return instance;
 	}
 
 	/**

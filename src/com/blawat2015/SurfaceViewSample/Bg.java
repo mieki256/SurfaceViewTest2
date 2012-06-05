@@ -14,26 +14,24 @@ public class Bg extends Task {
 	 * BGの描画領域を記録するためのクラス
 	 */
 	public class BgRect {
-		GWk gw;
 		public int w, h;
 		public boolean drawEnable;
 		public Rect src, dst;
 
 		public BgRect() {
-			gw = GWk.getInstance();
 			w = h = 0;
 			drawEnable = false;
 			src = new Rect();
 			dst = new Rect();
 		}
 
-		public void setRect(int u, int v, int x, int y, int sw, int sh, int scrw, int scrh) {
+		public void setRect(int u, int v, int x, int y, int sw, int sh,
+				int scrw, int scrh) {
 			w = sw;
 			h = sh;
-			if (x >= 0 && x < scrw && y >= 0 && y < scrh && w > 0
-					&& h > 0) {
+			if (x >= 0 && x < scrw && y >= 0 && y < scrh && w > 0 && h > 0) {
 				// 描画すべき矩形領域なので、描画元と描画先の範囲を指定
-				if (w > scrw - x) w = scrw- x;
+				if (w > scrw - x) w = scrw - x;
 				if (h > scrh - y) h = scrh - y;
 				src.set(u, v, u + w, v + h);
 				dst.set(x, y, x + w, y + h);
@@ -54,9 +52,7 @@ public class Bg extends Task {
 		 *            Bitmap
 		 */
 		public void draw(Canvas c, Paint p, Bitmap bmp) {
-			if (drawEnable) {
-				c.drawBitmap(bmp, src, dst, p);
-			}
+			if (drawEnable) c.drawBitmap(bmp, src, dst, p);
 		}
 	}
 
@@ -74,15 +70,15 @@ public class Bg extends Task {
 	public Bg(int sKind) {
 		gw = GWk.getInstance();
 		kind = sKind;
-		bmp = gw.img.getBgImg(sKind);
+		bmp = ImgMgr.getInstance().getBgImg(sKind);
 
 		// 画像の縦横幅を取得
 		bgW = bmp.getWidth();
 		bgH = bmp.getHeight();
 
-		for (int i = 0; i < r.length; i++) {
+		for (int i = 0; i < r.length; i++)
 			r[i] = new BgRect();
-		}
+
 		setPos(bgX, bgY);
 	}
 
@@ -122,8 +118,8 @@ public class Bg extends Task {
 
 		int uw = bgW - u;
 		int vh = bgH - v;
-		int dw = GWk.defScrW;
-		int dh = GWk.defScrH;
+		int dw = GWk.DEF_SCR_W;
+		int dh = GWk.DEF_SCR_H;
 
 		r[0].setRect(u, v, 0, 0, uw, vh, dw, dh);
 		r[1].setRect(0, v, uw, 0, dw - uw, vh, dw, dh);
@@ -161,7 +157,7 @@ public class Bg extends Task {
 
 		if (gw.disableScaleDraw) {
 			// 画像から一部分を切り出したりせず、無頓着に全部描画する処理
-			// drawBitmap()内で拡大縮小処理を必要としない
+			// drawBitmap()内で拡大縮小処理を必要としない、はず
 			int x = -bgU;
 			int y = -bgV;
 			int w = bmp.getWidth();
@@ -181,4 +177,3 @@ public class Bg extends Task {
 		}
 	}
 }
-

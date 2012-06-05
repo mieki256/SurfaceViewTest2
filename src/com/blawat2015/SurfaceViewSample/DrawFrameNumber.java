@@ -22,7 +22,7 @@ public class DrawFrameNumber extends Task {
 		long mills = (gw.lastDiffMilliTime > 0) ? gw.lastDiffMilliTime
 				: gw.diffMilliTime;
 		String s = String.format("ENEMY: %2d    MISS: %d    TIME: %s",
-				gw.charaCount, gw.miss, gw.getTimeStr(mills));
+				gw.charaCount, gw.miss, GWk.getTimeStr(mills));
 		gw.drawTextWidthBorder(c, s, 0, 24, Color.BLACK, Color.WHITE);
 	}
 }

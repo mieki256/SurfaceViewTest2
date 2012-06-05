@@ -16,6 +16,7 @@ public class StageClear extends Task {
 	int dispFrame = 0;
 	Paint paint = new Paint();
 	GWk gw;
+	ImgMgr img;
 
 	public StageClear() {
 		init(0, 0);
@@ -26,6 +27,7 @@ public class StageClear extends Task {
 	 */
 	public void init(int missValue, int frameValue) {
 		gw = GWk.getInstance();
+		img = ImgMgr.getInstance();
 		step = 0;
 		count = (int) GWk.FPS_VALUE * 3 / 4;
 		dispMiss = missValue;
@@ -43,7 +45,7 @@ public class StageClear extends Task {
 			// 一定時間待つ
 			if (--count <= 0) {
 				gw.clearTouchInfo();
-				gw.snd.playSe(SndMgr.SE_STGCLR);
+				SndMgr.getInstance().playSe(SndMgr.SE_STGCLR);
 				step++;
 			}
 			break;
@@ -72,10 +74,10 @@ public class StageClear extends Task {
 			paint.setAlpha(255);
 			paint.setColor(Color.BLACK);
 			paint.setAntiAlias(false);
-			Bitmap b = gw.img.bmp[ImgMgr.ID_LOGO_CLEAR];
-			int x = (GWk.defScrW - b.getWidth()) / 2;
+			Bitmap b = img.bmp[ImgMgr.ID_LOGO_CLEAR];
+			int x = (GWk.DEF_SCR_W - b.getWidth()) / 2;
 			int y = 120;
-			c.drawBitmap(gw.img.bmp[ImgMgr.ID_LOGO_CLEAR], x, y, paint);
+			c.drawBitmap(img.bmp[ImgMgr.ID_LOGO_CLEAR], x, y, paint);
 
 			// 文字を載せる背景矩形を描画
 			paint.setAlpha(255);
@@ -83,17 +85,15 @@ public class StageClear extends Task {
 			paint.setColor(Color.argb(128, 0, 0, 0));
 			int x0 = 0;
 			int y0 = 180;
-			int x1 = GWk.defScrW;
+			int x1 = GWk.DEF_SCR_W;
 			int y1 = y0 + 48;
 			c.drawRect(x0, y0, x1, y1, paint);
 
 			// ミス回数とフレーム数を描画
 			y = y0 + 16;
-			gw.drawTextWidthBorder(
-					c,
-					"MISS: " + dispMiss + "    TIME: "
-							+ gw.getTimeStr(gw.lastDiffMilliTime), x, y,
-					Color.WHITE, Color.BLACK);
+			String s = "MISS: " + dispMiss + "    TIME: "
+					+ GWk.getTimeStr(gw.lastDiffMilliTime);
+			gw.drawTextWidthBorder(c, s, x, y, Color.WHITE, Color.BLACK);
 		}
 	}
 }

@@ -8,7 +8,8 @@ import android.graphics.Canvas;
  * 敵管理用クラス
  */
 public class EnemyMgr extends Task {
-	GWk gw = GWk.getInstance();
+	GWk gw;
+	SndMgr snd;
 
 	// タスクリスト
 	private LinkedList<ZakoChara> taskList = new LinkedList<ZakoChara>();
@@ -19,10 +20,12 @@ public class EnemyMgr extends Task {
 	SpdUpLogo spdLogo = null;
 
 	public EnemyMgr() {
+		gw = GWk.getInstance();
+		snd = SndMgr.getInstance();
+
 		// 雑魚敵発生
-		for (int i = 0; i < ENEMY_MAX; i++) {
+		for (int i = 0; i < ENEMY_MAX; i++)
 			taskList.add(new ZakoChara());
-		}
 
 		// SpeedUpロゴ用クラス発生
 		spdLogo = new SpdUpLogo();
@@ -40,9 +43,10 @@ public class EnemyMgr extends Task {
 		gw.missEnable = false;
 		gw.level = 0;
 		gw.frameCounter = 0;
-		for (int i = 0; i < taskList.size(); i++) {
+
+		for (int i = 0; i < taskList.size(); i++)
 			taskList.get(i).init();
-		}
+
 		startTime = nowTime = System.currentTimeMillis();
 		gw.lastDiffMilliTime = gw.diffMilliTime = 0;
 	}
@@ -70,10 +74,10 @@ public class EnemyMgr extends Task {
 					if (oldCharaCount > 1) {
 						// ダメージSEを再生
 						int r = gw.rnd.nextInt(SndMgr.seVoiceList.length);
-						gw.snd.playSe(SndMgr.seVoiceList[r]);
+						snd.playSe(SndMgr.seVoiceList[r]);
 					} else {
 						// 最後の一匹なら別SE、かつ、スローモーション
-						gw.snd.playSe(SndMgr.SE_VOICE_UWAA_DELAY);
+						snd.playSe(SndMgr.SE_VOICE_UWAA_DELAY);
 						gw.slowMotionCount = (int) (GWk.FPS_VALUE * 1.5);
 						gw.lastDiffMilliTime = gw.diffMilliTime;
 					}
@@ -98,40 +102,27 @@ public class EnemyMgr extends Task {
 		diffTime = nowTime - startTime;
 		gw.diffMilliTime = diffTime;
 
-		switch (step) {
-		case 0:
+		if (step == 0) {
 			gw.levelChangeEnable = false;
 
 			// BGMを変更すべきかチェック
 			if (bgmChangeEnable) {
 				// 特定の敵数になったらBGMを変更
-				switch (gw.level) {
-				case 0:
-					if (gw.charaCount <= 50 + 1) {
-						gw.snd.stopBgm();
-						gw.snd.startBgm(SndMgr.BGM_MILD);
+				final int[] lst = {
+						50 + 1, SndMgr.BGM_MILD, //
+						10 + 1, SndMgr.BGM_BOSS, //
+						1, -1, //
+						-1, -1, //
+				};
+				if (gw.level <= 2 && gw.charaCount <= lst[gw.level * 2]) {
+					int n = lst[gw.level * 2 + 1];
+					if (n >= 0) {
+						snd.changeBgm(n);
 						gw.levelChangeEnable = true;
-						gw.level++;
+					} else {
+						snd.stopBgm();
 					}
-					break;
-
-				case 1:
-					if (gw.charaCount <= 10 + 1) {
-						gw.snd.stopBgm();
-						gw.snd.startBgm(SndMgr.BGM_BOSS);
-						gw.levelChangeEnable = true;
-						gw.level++;
-					}
-					break;
-
-				case 2:
-					if (gw.charaCount <= 1) {
-						gw.snd.stopBgm();
-						gw.level++;
-					}
-					break;
-				default:
-					break;
+					gw.level++;
 				}
 			}
 
@@ -149,22 +140,15 @@ public class EnemyMgr extends Task {
 					gw.clearTouchInfo();
 					gw.miss++; // ミス回数を+1する
 					gw.missEnable = true;
-					gw.snd.playSe(SndMgr.SE_MISS); // ミスSEを再生
+					snd.playSe(SndMgr.SE_MISS); // ミスSEを再生
 
 					// バイブを振動(単位はms)
 					gw.vib.vibrate(200);
 				}
 			}
-			break;
-
-		case 1:
+		} else {
 			result = false;
-			break;
-
-		default:
-			break;
 		}
-
 		return result;
 	}
 
@@ -173,11 +157,10 @@ public class EnemyMgr extends Task {
 	 */
 	@Override
 	public void onDraw(Canvas c) {
-		for (int i = 0; i < taskList.size(); i++) {
+		for (int i = 0; i < taskList.size(); i++)
 			taskList.get(i).onDraw(c);// 描画
-		}
+
 		spdLogo.onDraw(c);
 	}
 
 }
-

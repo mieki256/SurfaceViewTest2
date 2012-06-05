@@ -30,11 +30,11 @@ public class SpdUpLogo extends Task {
 	 * 初期化処理
 	 */
 	public void init() {
-		bmp = gw.img.bmp[ImgMgr.ID_LOGO_SPEEDUP];
+		bmp = ImgMgr.getInstance().bmp[ImgMgr.ID_LOGO_SPEEDUP];
 		step = 0;
 		cnt = 0;
-		x = (GWk.defScrW - bmp.getWidth()) / 2;
-		y = GWk.defScrH / 2;
+		x = (GWk.DEF_SCR_W - bmp.getWidth()) / 2;
+		y = GWk.DEF_SCR_H / 2;
 		dy = -1;
 		alpha = 0;
 	}
@@ -63,7 +63,7 @@ public class SpdUpLogo extends Task {
 			break;
 
 		case 2:
-			y = GWk.defScrH / 2;
+			y = GWk.DEF_SCR_H / 2;
 			alpha = 0;
 			step++;
 			break;

@@ -20,10 +20,10 @@ public class Title extends Task {
 
 	public Title() {
 		gw = GWk.getInstance();
-		bmp = gw.img.bmp[ImgMgr.ID_LOGO_TITLE];
+		bmp = ImgMgr.getInstance().bmp[ImgMgr.ID_LOGO_TITLE];
 		bmpw = bmp.getWidth();
 		bmph = bmp.getHeight();
-		ox = GWk.defScrW / 2;
+		ox = GWk.DEF_SCR_W / 2;
 		oy = 130;
 		cnt = 0;
 		src = new Rect();

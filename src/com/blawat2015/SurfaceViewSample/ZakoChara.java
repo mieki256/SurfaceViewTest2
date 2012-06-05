@@ -61,8 +61,8 @@ public class ZakoChara extends Task {
 		deadStart = false;
 
 		// 初期座標設定
-		x = GWk.defScrW / 2;
-		y = GWk.defScrH / 2;
+		x = GWk.DEF_SCR_W / 2;
+		y = GWk.DEF_SCR_H / 2;
 
 		// 速度設定
 		int ang = gw.rnd.nextInt(360);
@@ -80,7 +80,7 @@ public class ZakoChara extends Task {
 			imgKind = 0;
 		}
 		patNum = 0;
-		img0 = gw.img.charaImg;
+		img0 = ImgMgr.getInstance().charaImg;
 
 		setRect();
 	}
@@ -138,10 +138,10 @@ public class ZakoChara extends Task {
 			// 画面端に来たら移動方向を反転
 			int bw = (sw / 2);
 			int bh = (sh / 2);
-			if (x < bw || x > GWk.defScrW - bw) {
+			if (x < bw || x > GWk.DEF_SCR_W - bw) {
 				dx *= -1;
 			}
-			if (y < bh || y > GWk.defScrH - bh) {
+			if (y < bh || y > GWk.DEF_SCR_H - bh) {
 				dy *= -1;
 			}
 
@@ -202,8 +202,9 @@ public class ZakoChara extends Task {
 		paint.setAlpha(alpha);
 
 		if (gw.disableScaleDraw) {
+			// 画像の一部分を極力切り出さないで描画する場合
 			int n = ImgMgr.ID_CHARA_SPLIT + (imgKind * 3) + patNum;
-			Bitmap limg = gw.img.bmp[n];
+			Bitmap limg = ImgMgr.getInstance().bmp[n];
 			if (scale == 1.0f) {
 				// 等倍描画
 				c.drawBitmap(limg, dst.left, dst.top, paint);

@@ -13,6 +13,8 @@ import android.media.SoundPool.OnLoadCompleteListener;
  */
 public class SndMgr implements OnLoadCompleteListener {
 
+	private static SndMgr instance = new SndMgr();
+
 	// BGM番号を定義
 	// この番号を指定して、BGMを再生する
 	public final static int BGM_FIRST = 0;
@@ -96,7 +98,7 @@ public class SndMgr implements OnLoadCompleteListener {
 	/**
 	 * コンストラクタ
 	 */
-	public SndMgr() {
+	private SndMgr() {
 		bgm = new MediaPlayer[bgmResIdList.length];
 		seId = new int[seResIdList.length];
 		bgmNumber = -1;
@@ -104,6 +106,10 @@ public class SndMgr implements OnLoadCompleteListener {
 		testBgmIndex = 0;
 		silentEnbale = false;
 		soundDisable = false;
+	}
+
+	public static SndMgr getInstance() {
+		return instance;
 	}
 
 	/**
@@ -315,6 +321,15 @@ public class SndMgr implements OnLoadCompleteListener {
 	public void restartBgm() {
 		if (bgmNumber < 0) return;
 		if (isSoundEnable()) bgm[bgmNumber].start();
+	}
+
+	/**
+	 * BGMの変更
+	 * @param id BGM番号
+	 */
+	public void changeBgm(int id) {
+		stopBgm();
+		startBgm(id);
 	}
 
 	/**

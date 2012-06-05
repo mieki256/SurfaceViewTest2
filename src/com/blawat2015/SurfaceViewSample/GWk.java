@@ -13,19 +13,19 @@ import android.os.Vibrator;
 public class GWk {
 	private static GWk instance = new GWk();
 
-	// setFixedSize()を使うかどうか
-	public boolean fixedSizeEnable;
-
-	// 極力拡大縮小しない描画処理をするか否か
-	public boolean disableScaleDraw;
-
 	// 目標FPS
 	public final static long FPS_VALUE = 60;
 	public final static long INTERVAL = (1000 * 1000 * 1000) / FPS_VALUE;
 
 	// 標準として扱う画面サイズ
-	public final static int defScrW = 240;
-	public final static int defScrH = 320;
+	public final static int DEF_SCR_W = 240;
+	public final static int DEF_SCR_H = 320;
+
+	// setFixedSize()を使うかどうか
+	public boolean fixedSizeEnable;
+
+	// 極力拡大縮小しない描画処理をするか否か
+	public boolean disableScaleDraw;
 
 	// 実機上の実画面サイズ
 	public int scrW;
@@ -46,8 +46,6 @@ public class GWk {
 	// BG0,BG1,雑魚敵の描画有効無効
 	public boolean[] layerDrawEnable = new boolean[3];
 
-	public ImgMgr img; 	// 画像関係
-	public SndMgr snd; 	// サウンド関係
 	public Vibrator vib; // バイブレーション機能関係
 	public Random rnd = new Random(); // 乱数
 
@@ -87,6 +85,9 @@ public class GWk {
 	// 0より大きければ、設定されたフレーム数分、スローモーションになる。
 	public int slowMotionCount = 0;
 
+	// オプションメニューを開いているか否か
+	public boolean enableOpenMenu;
+
 	Paint paint = new Paint();
 
 	/**
@@ -96,6 +97,7 @@ public class GWk {
 		fixedSizeEnable = false;
 		disableScaleDraw = false;
 		levelChangeEnable = false;
+		enableOpenMenu = false;
 		level = 0;
 	}
 
@@ -118,7 +120,7 @@ public class GWk {
 	 *            ミリ秒
 	 * @return String (「xx:xx:xx」にした文字列)
 	 */
-	public String getTimeStr(long mills) {
+	public static String getTimeStr(long mills) {
 		long hh = mills / (60 * 60 * 1000);
 		long mm = (mills / (60 * 1000)) % 60;
 		long ss = (mills / (1000)) % 60;

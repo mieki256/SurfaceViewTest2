@@ -32,7 +32,7 @@ class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		LogUtil.d("SURFACE", "surfaceCreaded");
-		MainLoop.startNow(this); // スレッドを開始
+		Main.startNow(this); // スレッドを開始
 	}
 
 	/**
@@ -42,7 +42,7 @@ class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		LogUtil.d("SURFACE", "surfaceChanged");
-		MainLoop.saveScreenWH(width, height); // 画面の縦横幅を取得かつ記録
+		Main.saveScreenWH(width, height); // 画面の縦横幅を取得かつ記録
 	}
 
 
@@ -51,8 +51,8 @@ class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	 */
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		LogUtil.d("SURFACE", "surfaceDestroyed()");
-		MainLoop.endNow(); // スレッド終了
+		LogUtil.d("SURFACE", "surfaceDestroyed");
+		Main.endNow(); // スレッド終了
 	}
 
 	/**

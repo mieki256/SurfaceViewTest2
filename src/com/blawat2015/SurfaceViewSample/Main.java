@@ -12,7 +12,7 @@ import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-final class MainLoop {
+final class Main {
 
 	private static ScheduledExecutorService mExec;
 	private static SurfaceView view;
@@ -22,7 +22,7 @@ final class MainLoop {
 	 * メインループ部分相当
 	 */
 	public static void startNow(final SurfaceView view) {
-		MainLoop.view = view;
+		Main.view = view;
 		Snd.checkSilentMode(); // 消音すべきモードかチェック
 		FpsCount.init();
 		mExec = Executors.newSingleThreadScheduledExecutor();
@@ -31,17 +31,17 @@ final class MainLoop {
 			public void run() {
 				// この中が一定時間毎に処理される
 				// LogUtil.d("SURFACE_LOOP", "loop");
-				MainLoop.runLoop();
+				Main.runLoop();
 			}
 		}, 0, GWk.INTERVAL, TimeUnit.NANOSECONDS);
 		// INTERVALの間隔で処理が行われる
 
-		LogUtil.d("MainLoop", "start thread");
+		LogUtil.d("Main", "start thread");
 	}
 
 	public static void runLoop() {
 		// 更新処理
-		GameMgr.onUpdate(MainLoop.view);
+		GameMgr.onUpdate(Main.view);
 
 		// 描画処理
 		final SurfaceHolder holder = view.getHolder();
@@ -111,7 +111,7 @@ final class MainLoop {
 	 * スレッド終了処理
 	 */
 	public static void endNow() {
-		LogUtil.d("MainLoop", "stop thread (start)");
+		LogUtil.d("Main", "stop thread (start)");
 		mExec.shutdownNow();
 		try {
 			// スレッド終了まで待つ
@@ -119,7 +119,7 @@ final class MainLoop {
 		} catch (Exception e) {
 		}
 		mExec = null;
-		LogUtil.d("MainLoop", "stop thread (end)");
+		LogUtil.d("Main", "stop thread (end)");
 	}
 
 	/**
@@ -132,7 +132,7 @@ final class MainLoop {
 			// setFixedSize() を使っている場合、
 			// widthとheightに設定済みの値が入ってきてしまう模様。
 			// 仕方ないので、別の取得方法で、w,hを取得する。
-			Point p = MainLoop.getWindowSize();
+			Point p = Main.getWindowSize();
 			setScreenWH(p.x, p.y);
 		} else {
 			setScreenWH(width, height);
@@ -149,7 +149,7 @@ final class MainLoop {
 		Display disp = GWk.window.getWindowManager().getDefaultDisplay();
 		p.x = disp.getWidth();
 		p.y = disp.getHeight();
-		LogUtil.d("MainLoop", "get Window size "+p.x +","+p.y);
+		LogUtil.d("Main", "get Window size "+p.x +","+p.y);
 		return p;
 	}
 

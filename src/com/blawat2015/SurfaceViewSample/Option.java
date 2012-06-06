@@ -131,9 +131,9 @@ final class Option {
 		case MENU_ID_FIXSIZE:
 			// setFixedSize() を有効にする
 			// (Canvas#scaleを無効にする)
-			Point p = MainLoop.getWindowSize();
+			Point p = Main.getWindowSize();
 			GWk.fixedSizeEnable = true;
-			MainLoop.setScreenWH(p.x, p.y);
+			Main.setScreenWH(p.x, p.y);
 			break;
 		case MENU_ID_DRAWTYPE:
 			// 拡大縮小描画を積極的にするかどうかの有効無効を切り替える

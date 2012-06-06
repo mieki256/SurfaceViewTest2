@@ -11,8 +11,6 @@ import android.graphics.Paint.Style;
  * 画面の中をウロウロする雑魚敵のクラス
  */
 public class ZakoChara extends Task {
-	GWk gw = GWk.getInstance();
-
 	int sw = 32; // 画像横幅
 	int sh = 32; // 画像縦幅
 
@@ -31,8 +29,6 @@ public class ZakoChara extends Task {
 	Rect dst = new Rect(); // 描画先範囲
 	Rect hitArea = new Rect();
 	boolean drawHitAreaEnable = false;
-
-	Bitmap img0;
 
 	int step = 0;
 	int cnt = 0;
@@ -65,8 +61,8 @@ public class ZakoChara extends Task {
 		y = GWk.DEF_SCR_H / 2;
 
 		// 速度設定
-		int ang = gw.rnd.nextInt(360);
-		float spd = (float) (gw.rnd.nextInt(30) + 10) / 10;
+		int ang = GWk.rnd.nextInt(360);
+		float spd = (float) (GWk.rnd.nextInt(30) + 10) / 10;
 		double rad = Math.toRadians(ang);
 		dx = (float) (spd * Math.cos(rad));
 		dy = (float) (spd * Math.sin(rad));
@@ -80,7 +76,6 @@ public class ZakoChara extends Task {
 			imgKind = 0;
 		}
 		patNum = 0;
-		img0 = ImgMgr.getInstance().charaImg;
 
 		setRect();
 	}
@@ -95,7 +90,7 @@ public class ZakoChara extends Task {
 		int h = (int) ((sh / 2) * scale);
 
 		// 描画元範囲指定
-		if (gw.disableScaleDraw) {
+		if (GWk.disableScaleDraw) {
 			// 画像をそのまま描画する場合
 			src.set(0, 0, sw, sh);
 		} else {
@@ -118,11 +113,11 @@ public class ZakoChara extends Task {
 		case 0:
 			// 通常移動
 
-			gw.charaCount++;
+			GWk.charaCount++;
 
-			if (gw.levelChangeEnable) {
+			if (GWk.levelChangeEnable) {
 				// レベルが変わったので速度を微妙に速くする
-				if (gw.level == 1) {
+				if (GWk.level == 1) {
 					dx *= 1.2f;
 					dy *= 1.2f;
 				} else {
@@ -145,24 +140,24 @@ public class ZakoChara extends Task {
 				dy *= -1;
 			}
 
-			if (gw.frameCounter % 8 == 0) {
+			if (GWk.frameCounter % 8 == 0) {
 				// アニメパターン番号を1つ進める
 				patNum++;
 				patNum %= 2;
 			}
 
-			if (gw.touchEnable) {
+			if (GWk.touchEnable) {
 				// 画面をタップしているのでアタリ判定
 
 				int w = (sw / 2);
 				int h = (sh / 2);
 				hitArea.set((int) (x - w), (int) (y - h), (int) (x + w),
 						(int) (y + h));
-				if (hitArea.left < gw.touchX && gw.touchX < hitArea.right
-						&& hitArea.top < gw.touchY
-						&& gw.touchY < hitArea.bottom) {
+				if (hitArea.left < GWk.touchX && GWk.touchX < hitArea.right
+						&& hitArea.top < GWk.touchY
+						&& GWk.touchY < hitArea.bottom) {
 					// タッチされた
-					gw.clearTouchInfo();
+					GWk.clearTouchInfo();
 					drawHitAreaEnable = true;
 					patNum = 2;
 					deadStart = true;
@@ -195,16 +190,16 @@ public class ZakoChara extends Task {
 	 */
 	@Override
 	public void onDraw(Canvas c) {
-		if (!befg || !gw.layerDrawEnable[2] || step >= 2) return;
+		if (!befg || !GWk.layerDrawEnable[2] || step >= 2) return;
 
 		// 描画
 		paint.setAntiAlias(false);
 		paint.setAlpha(alpha);
 
-		if (gw.disableScaleDraw) {
+		if (GWk.disableScaleDraw) {
 			// 画像の一部分を極力切り出さないで描画する場合
-			int n = ImgMgr.ID_CHARA_SPLIT + (imgKind * 3) + patNum;
-			Bitmap limg = ImgMgr.getInstance().bmp[n];
+			int n = Img.ID_CHARA_SPLIT + (imgKind * 3) + patNum;
+			Bitmap limg = Img.bmp[n];
 			if (scale == 1.0f) {
 				// 等倍描画
 				c.drawBitmap(limg, dst.left, dst.top, paint);
@@ -214,7 +209,8 @@ public class ZakoChara extends Task {
 			}
 		} else {
 			// 画像の一部分を切り出して描画する場合
-			c.drawBitmap(img0, src, dst, paint);
+			Bitmap limg = Img.bmp[Img.ID_CHARA];
+			c.drawBitmap(limg, src, dst, paint);
 		}
 
 		if (drawHitAreaEnable) {

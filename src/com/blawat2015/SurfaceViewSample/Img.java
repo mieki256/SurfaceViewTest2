@@ -3,19 +3,14 @@ package com.blawat2015.SurfaceViewSample;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.SurfaceView;
 
 /**
  * 画像管理用クラス
  */
-public class ImgMgr {
+final class Img {
 
-	private static ImgMgr instance = new ImgMgr();
-
-	// ビットマップ画像
-	public Bitmap charaImg;
-
-	public Bitmap[] bmp;
-
+	// 画像番号
 	public final static int ID_BG0 = 0;
 	public final static int ID_BG1 = 1;
 	public final static int ID_CHARA = 2;
@@ -29,7 +24,7 @@ public class ImgMgr {
 	public final static int ID_TOUCH1 = 18;
 
 	// 画像リソースIDのリスト
-	private final int[] imgId = {
+	private final static int[] imgId = {
 			R.drawable.bg320x384, // 0
 			R.drawable.bg320x384_2, // 1
 			R.drawable.chara1_32, // 2
@@ -51,50 +46,38 @@ public class ImgMgr {
 			R.drawable.touch_icon1, // 18
 	};
 
+	public static Bitmap[] bmp = new Bitmap[imgId.length];
+	private static Resources resources;
+
 	/**
 	 * コンストラクタ
 	 */
-	private ImgMgr() {
-		bmp = new Bitmap[imgId.length];
-	}
-
-	public static ImgMgr getInstance() {
-		return instance;
+	private Img() {
 	}
 
 	/**
-	 * 画像読み込み
+	 * 初期化処理
+	 * @param view
 	 */
-	public void loadImageRes(Resources res) {
+	public static void init(final SurfaceView view) {
+		LogUtil.d("Img", "init Img");
+		resources = view.getResources();
+
+		LogUtil.d("Img", "load Images");
 		for (int i = 0; i < imgId.length; i++) {
-			bmp[i] = BitmapFactory.decodeResource(res, imgId[i]);
+			if (bmp[i] == null || bmp[i].isRecycled() )
+				bmp[i] = BitmapFactory.decodeResource(resources, imgId[i]);
 		}
-
-		charaImg = bmp[ID_CHARA];
-	}
-
-	/**
-	 * BG用のbitmapを返す
-	 *
-	 * @param kind
-	 *            0 or 1
-	 * @return Bitmap
-	 */
-	public Bitmap getBgImg(int kind) {
-		return bmp[((kind == 0) ? ID_BG0 : ID_BG1)];
 	}
 
 	/**
 	 * 画像を全て破棄
 	 */
-	public void recycleImageAll() {
+	public static void releaseImageResAll() {
+		LogUtil.d("Img", "recycle Bmp All");
 		for (int i = 0; i < bmp.length; i++) {
-			if (bmp[i] != null) {
-				bmp[i].recycle();
-				bmp[i] = null;
-			}
+			if (bmp[i] != null) bmp[i].recycle();
 		}
+		System.gc();
 	}
-
 }
-

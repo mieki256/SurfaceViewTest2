@@ -17,5 +17,7 @@
     <string name="menu_silent">Now, Silent Mode</string>
     <string name="menu_drawtype0">Draw Type 0</string>
     <string name="menu_drawtype1">Draw Type 1</string>
+    <string name="menu_exit">EXIT</string>
+    <string name="menu_kill">Kill Process</string>
 
 </resources>

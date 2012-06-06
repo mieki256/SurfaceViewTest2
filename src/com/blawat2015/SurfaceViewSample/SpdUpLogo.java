@@ -15,14 +15,12 @@ public class SpdUpLogo extends Task {
 	int dy = 0;
 	int alpha = 0;
 	Bitmap bmp = null;
-	GWk gw;
 	Paint paint = new Paint();
 
 	/**
 	 * コンストラクタ
 	 */
 	public SpdUpLogo() {
-		gw = GWk.getInstance();
 		init();
 	}
 
@@ -30,7 +28,7 @@ public class SpdUpLogo extends Task {
 	 * 初期化処理
 	 */
 	public void init() {
-		bmp = ImgMgr.getInstance().bmp[ImgMgr.ID_LOGO_SPEEDUP];
+		bmp = Img.bmp[Img.ID_LOGO_SPEEDUP];
 		step = 0;
 		cnt = 0;
 		x = (GWk.DEF_SCR_W - bmp.getWidth()) / 2;

@@ -56,7 +56,6 @@ public class Bg extends Task {
 		}
 	}
 
-	GWk gw;
 	private Paint paint = new Paint();
 	int kind, bgW, bgH, bgCounter = 0;
 	float bgX, bgY;
@@ -68,9 +67,8 @@ public class Bg extends Task {
 	 * コンストラクタ
 	 */
 	public Bg(int sKind) {
-		gw = GWk.getInstance();
 		kind = sKind;
-		bmp = ImgMgr.getInstance().getBgImg(sKind);
+		bmp = Img.bmp[(sKind == 0)? Img.ID_BG0 : Img.ID_BG1];
 
 		// 画像の縦横幅を取得
 		bgW = bmp.getWidth();
@@ -147,7 +145,7 @@ public class Bg extends Task {
 	 */
 	@Override
 	public void onDraw(Canvas c) {
-		if (!gw.layerDrawEnable[kind]) return;
+		if (!GWk.layerDrawEnable[kind]) return;
 
 		paint.setAntiAlias(false);
 
@@ -155,7 +153,7 @@ public class Bg extends Task {
 		paint.setAlpha((kind == 0) ? 255 : 224);
 		// paint.setAlpha(255);
 
-		if (gw.disableScaleDraw) {
+		if (GWk.disableScaleDraw) {
 			// 画像から一部分を切り出したりせず、無頓着に全部描画する処理
 			// drawBitmap()内で拡大縮小処理を必要としない、はず
 			int x = -bgU;

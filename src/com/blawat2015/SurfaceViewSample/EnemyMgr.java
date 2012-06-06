@@ -8,8 +8,6 @@ import android.graphics.Canvas;
  * 敵管理用クラス
  */
 public class EnemyMgr extends Task {
-	GWk gw;
-	SndMgr snd;
 
 	// タスクリスト
 	private LinkedList<ZakoChara> taskList = new LinkedList<ZakoChara>();
@@ -20,16 +18,11 @@ public class EnemyMgr extends Task {
 	SpdUpLogo spdLogo = null;
 
 	public EnemyMgr() {
-		gw = GWk.getInstance();
-		snd = SndMgr.getInstance();
-
 		// 雑魚敵発生
 		for (int i = 0; i < ENEMY_MAX; i++)
 			taskList.add(new ZakoChara());
 
-		// SpeedUpロゴ用クラス発生
-		spdLogo = new SpdUpLogo();
-
+		spdLogo = new SpdUpLogo(); // SpeedUpロゴ用クラス発生
 		init();
 	}
 
@@ -37,18 +30,18 @@ public class EnemyMgr extends Task {
 	 * 初期化処理
 	 */
 	public void init() {
-		gw.charaCount = ENEMY_MAX;
+		GWk.charaCount = ENEMY_MAX;
 		step = 0;
-		gw.miss = 0;
-		gw.missEnable = false;
-		gw.level = 0;
-		gw.frameCounter = 0;
+		GWk.miss = 0;
+		GWk.missEnable = false;
+		GWk.level = 0;
+		GWk.frameCounter = 0;
 
 		for (int i = 0; i < taskList.size(); i++)
 			taskList.get(i).init();
 
 		startTime = nowTime = System.currentTimeMillis();
-		gw.lastDiffMilliTime = gw.diffMilliTime = 0;
+		GWk.lastDiffMilliTime = GWk.diffMilliTime = 0;
 	}
 
 	/**
@@ -58,8 +51,8 @@ public class EnemyMgr extends Task {
 	public boolean onUpdate() {
 		boolean result = true;
 
-		int oldCharaCount = gw.charaCount;
-		gw.charaCount = 0; // 敵数カウント用変数をクリア
+		int oldCharaCount = GWk.charaCount;
+		GWk.charaCount = 0; // 敵数カウント用変数をクリア
 		boolean bgmChangeEnable = false;
 		int countBeNum = 0;
 
@@ -73,13 +66,13 @@ public class EnemyMgr extends Task {
 					// 雑魚敵消滅処理が開始された
 					if (oldCharaCount > 1) {
 						// ダメージSEを再生
-						int r = gw.rnd.nextInt(SndMgr.seVoiceList.length);
-						snd.playSe(SndMgr.seVoiceList[r]);
+						int r = GWk.rnd.nextInt(Snd.seVoiceList.length);
+						Snd.playSe(Snd.seVoiceList[r]);
 					} else {
 						// 最後の一匹なら別SE、かつ、スローモーション
-						snd.playSe(SndMgr.SE_VOICE_UWAA_DELAY);
-						gw.slowMotionCount = (int) (GWk.FPS_VALUE * 1.5);
-						gw.lastDiffMilliTime = gw.diffMilliTime;
+						Snd.playSe(Snd.SE_VOICE_UWAA_DELAY);
+						GWk.slowMotionCount = (int) (GWk.FPS_VALUE * 1.5);
+						GWk.lastDiffMilliTime = GWk.diffMilliTime;
 					}
 
 					// リストから取り出して一番最後に配置
@@ -92,7 +85,7 @@ public class EnemyMgr extends Task {
 					bgmChangeEnable = true;
 
 					z.deadStart = false;
-					gw.missEnable = false;
+					GWk.missEnable = false;
 				}
 			}
 			if (z.befg) countBeNum++;
@@ -100,50 +93,50 @@ public class EnemyMgr extends Task {
 
 		nowTime = System.currentTimeMillis();
 		diffTime = nowTime - startTime;
-		gw.diffMilliTime = diffTime;
+		GWk.diffMilliTime = diffTime;
 
 		if (step == 0) {
-			gw.levelChangeEnable = false;
+			GWk.levelChangeEnable = false;
 
 			// BGMを変更すべきかチェック
 			if (bgmChangeEnable) {
 				// 特定の敵数になったらBGMを変更
 				final int[] lst = {
-						50 + 1, SndMgr.BGM_MILD, //
-						10 + 1, SndMgr.BGM_BOSS, //
+						50 + 1, Snd.BGM_MILD, //
+						10 + 1, Snd.BGM_BOSS, //
 						1, -1, //
 						-1, -1, //
 				};
-				if (gw.level <= 2 && gw.charaCount <= lst[gw.level * 2]) {
-					int n = lst[gw.level * 2 + 1];
+				if (GWk.level <= 2 && GWk.charaCount <= lst[GWk.level * 2]) {
+					int n = lst[GWk.level * 2 + 1];
 					if (n >= 0) {
-						snd.changeBgm(n);
-						gw.levelChangeEnable = true;
+						Snd.changeBgm(n);
+						GWk.levelChangeEnable = true;
 					} else {
-						snd.stopBgm();
+						Snd.stopBgm();
 					}
-					gw.level++;
+					GWk.level++;
 				}
 			}
 
 			spdLogo.onUpdate();
-			if (gw.levelChangeEnable) spdLogo.setDispEnable();
+			if (GWk.levelChangeEnable) spdLogo.setDispEnable();
 
 			if (countBeNum <= 0) {
 				// 動いてる敵が一匹も居ない
 				step++;
 			} else {
 				// 動いている敵が居る
-				if (gw.touchEnable) {
+				if (GWk.touchEnable) {
 					// ここまでタッチ情報がクリアされていないということは、
 					// 敵をタッチできなかった状態ということ
-					gw.clearTouchInfo();
-					gw.miss++; // ミス回数を+1する
-					gw.missEnable = true;
-					snd.playSe(SndMgr.SE_MISS); // ミスSEを再生
+					GWk.clearTouchInfo();
+					GWk.miss++; // ミス回数を+1する
+					GWk.missEnable = true;
+					Snd.playSe(Snd.SE_MISS); // ミスSEを再生
 
 					// バイブを振動(単位はms)
-					gw.vib.vibrate(200);
+					GWk.vib.vibrate(200);
 				}
 			}
 		} else {

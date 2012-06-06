@@ -10,8 +10,6 @@ import android.graphics.RectF;
  * タイトル処理クラス
  */
 public class Title extends Task {
-	GWk gw;
-	SndMgr snd;
 	int x, y, ox, oy, bmpw, bmph, cnt;
 	Rect src;
 	RectF dst;
@@ -29,11 +27,9 @@ public class Title extends Task {
 	 * コンストラクタ
 	 */
 	public Title() {
-		gw = GWk.getInstance();
-		snd = SndMgr.getInstance();
-		bmp = ImgMgr.getInstance().bmp[ImgMgr.ID_LOGO_TITLE];
-		sndbmp[0] = ImgMgr.getInstance().bmp[ImgMgr.ID_SOUNDOFF];
-		sndbmp[1] = ImgMgr.getInstance().bmp[ImgMgr.ID_SOUNDON];
+		bmp = Img.bmp[Img.ID_LOGO_TITLE];
+		sndbmp[0] = Img.bmp[Img.ID_SOUNDOFF];
+		sndbmp[1] = Img.bmp[Img.ID_SOUNDON];
 		bmpw = bmp.getWidth();
 		bmph = bmp.getHeight();
 		ox = GWk.DEF_SCR_W / 2;
@@ -62,29 +58,28 @@ public class Title extends Task {
 		dst.set(ox - sw, oy - sh, ox + sw, oy + sh);
 		cnt += 4;
 
-		if (gw.touchEnable) {
+		if (GWk.touchEnable) {
 			// 画面をタッチされた
 
-			if (SNDMARK_X < gw.touchX && gw.touchX < SNDMARK_X + SNDMARK_WH
-					&& SNDMARK_Y < gw.touchY
-					&& gw.touchY < SNDMARK_Y + SNDMARK_WH) {
+			if (SNDMARK_X < GWk.touchX && GWk.touchX < SNDMARK_X + SNDMARK_WH
+					&& SNDMARK_Y < GWk.touchY
+					&& GWk.touchY < SNDMARK_Y + SNDMARK_WH) {
 				// サウンドマーク内でタッチされた。サウンドの有効無効を切替
-				snd.changeSoundMode();
-				if ( snd.isSoundEnable() ) {
-					snd.playSe(SndMgr.SE_VOICE_IYOU);
+				Snd.changeSoundMode();
+				if ( Snd.isSoundEnable() ) {
+					Snd.playSe(Snd.SE_VOICE_IYOU);
 				}
 			} else {
 				// サウンドマーク外でタッチされた。ゲーム開始
 				result = false;
 			}
-			gw.clearTouchDrawInfo(); // タッチ座標描画をクリア
+			GWk.clearTouchDrawInfo(); // タッチ座標描画をクリア
 		}
 
 		// サウンド有効無効を表示に反映
-		sndBmpId = (snd.isSoundEnable()) ? 1 : 0;
+		sndBmpId = (Snd.isSoundEnable()) ? 1 : 0;
 
-		TouchReq trq = TouchReq.getInstance();
-		trq.onUpdate();
+		TouchReq.onUpdate();
 
 		return result;
 	}
@@ -94,7 +89,7 @@ public class Title extends Task {
 	 */
 	@Override
 	public void onDraw(Canvas c) {
-		if (!gw.layerDrawEnable[2]) return;
+		if (!GWk.layerDrawEnable[2]) return;
 
 		// タイトルロゴ描画
 		paint.setAntiAlias(true);
@@ -105,8 +100,7 @@ public class Title extends Task {
 		c.drawBitmap(sndbmp[sndBmpId], SNDMARK_X, SNDMARK_Y, paint);
 
 		// タッチ要求アイコン描画
-		TouchReq trq = TouchReq.getInstance();
-		trq.onDraw(c);
+		TouchReq.onDraw(c);
 	}
 
 };

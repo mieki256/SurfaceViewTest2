@@ -7,13 +7,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
+import android.view.SurfaceView;
 
 /**
  * サウンド関連クラス
  */
-public class SndMgr implements OnLoadCompleteListener {
-
-	private static SndMgr instance = new SndMgr();
+final class Snd {
 
 	// BGM番号を定義
 	// この番号を指定して、BGMを再生する
@@ -22,7 +21,7 @@ public class SndMgr implements OnLoadCompleteListener {
 	public final static int BGM_MILD = 2;
 
 	// BGMリソースIDリスト
-	private final int[] bgmResIdList = {
+	private final static int[] bgmResIdList = {
 			R.raw.bgm01, // 0
 			R.raw.bgm02, // 1
 			R.raw.bgm03, // 2
@@ -46,7 +45,7 @@ public class SndMgr implements OnLoadCompleteListener {
 	public final static int SE_STGCLR = 13;
 
 	// SEリソースIDリスト
-	private final int[] seResIdList = {
+	private final static int[] seResIdList = {
 			R.raw.se_miss, // 0
 			R.raw.se_voice_gya, // 1
 			R.raw.se_voice_hunya, // 2
@@ -71,57 +70,148 @@ public class SndMgr implements OnLoadCompleteListener {
 			SE_VOICE_WAA, SE_VOICE_WHEU, SE_VOICE_WII,
 	};
 
-	private MediaPlayer[] bgm;
-	private SoundPool sndPool;
+	private static Context context;
+	private static MediaPlayer[] bgm;
+	private static int[] seId; // SE(SoundPoll)ID記録用
+	private static SoundPool sndPool;
 
-	// SE(SoundPoll)ID記録用
-	private int[] seId;
-
-	// SEデータ読み込み終了フラグ
-	public boolean seLoadComplete = false;
-
-	// 現在再生中のBGM番号を記録
-	int bgmNumber;
-
-	// テスト用：bgmを順に鳴らすためのワーク
-	private int testBgmIndex;
-
-	// マナーモード判別その他を行うためにAudioManagerを用意する
-	public AudioManager audioManager;
+	private static int bgmNumber = -1; // 現在再生中のBGM番号を記録
+	private static int testBgmIndex = 0; // テスト用：bgmを順に鳴らすためのワーク
+	public static int seLoadComplete = 0; // SEデータ読み込み終了カウント
 
 	/**
 	 * 消音すべきモードか否か(マナーモード等の情報).
+	 *
+	 * <p>
 	 * trueならマナーモード、falseなら非マナーモード
+	 * </p>
 	 */
-	public boolean silentEnbale = false;
+	public static boolean silentEnbale = false;
 
 	/**
 	 * サウンドが無効か否か.
+	 * <p>
 	 * trueならサウンド無効、falseならサウンド有効
+	 * </p>
 	 */
-	public boolean soundDisable = false;
+	private static boolean soundDisable = true;
+
+	private static boolean first = true;
 
 	/**
 	 * コンストラクタ
 	 */
-	private SndMgr() {
-		bgm = new MediaPlayer[bgmResIdList.length];
-		seId = new int[seResIdList.length];
+	private Snd() {
+		initWk();
+	}
+
+	/**
+	 * ワーク初期化
+	 */
+	private static void initWk() {
 		bgmNumber = -1;
-		seLoadComplete = false;
+		seLoadComplete = 0;
 		testBgmIndex = 0;
 		silentEnbale = false;
 		soundDisable = true;
 	}
 
-	public static SndMgr getInstance() {
-		return instance;
+	/**
+	 * 初期化処理
+	 *
+	 * @param view
+	 *            SurfaceView
+	 */
+	public static void init(final SurfaceView view) {
+		if (!first) return;
+
+		LogUtil.d("Snd", "init Snd");
+
+		context = view.getContext();
+		bgm = new MediaPlayer[bgmResIdList.length];
+		seId = new int[seResIdList.length];
+		sndPool = null;
+		initWk();
+
+		// BGMデータ読み込み
+		LogUtil.d("Snd", "load BGM Res");
+		for (int i = 0; i < bgmResIdList.length; i++) {
+			bgm[i] = MediaPlayer.create(context, bgmResIdList[i]);
+
+			// ループ再生することを指定
+			bgm[i].setLooping(true);
+
+			// ストリームタイプを指定
+			bgm[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+			// 再生のための前準備として prepare()が必要らしいのだが、
+			// SDKのバージョンによっては、create()の中で既に呼んでいるようで、
+			// もしかすると呼ぶ必要はないらしい？
+
+			// try {
+			// bgm[i].prepare();
+			// } catch (IllegalStateException e) {
+			// e.printStackTrace();
+			// } catch (IOException e) {
+			// e.printStackTrace();
+			// }
+		}
+
+		// SEデータ読み込み
+		LogUtil.d("Snd", "load SE Res");
+		seLoadComplete = 0;
+		sndPool = new SoundPool(seResIdList.length, AudioManager.STREAM_MUSIC,
+				0);
+		sndPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
+
+			@Override
+			public void onLoadComplete(SoundPool soundPool, int sampleId,
+					int status) {
+				if (status == 0) {
+					LogUtil.d("Snd", "SE Load complete");
+					seLoadComplete++;
+				}
+			}
+		});
+		for (int i = 0; i < seResIdList.length; i++)
+			seId[i] = sndPool.load(context, seResIdList[i], 1);
+
+		first = false;
+	}
+
+	/**
+	 * 全サウンドデータを解放
+	 */
+	public static void releaseSoundResAll() {
+		LogUtil.d("Snd", "release Se Res All");
+		if (sndPool != null) {
+			for (int i = 0; i < seResIdList.length; i++) {
+				int id = seId[i];
+				sndPool.stop(id);
+				sndPool.unload(id);
+			}
+			sndPool.release();
+		}
+
+		// BGMデータを解放
+		LogUtil.d("Snd", "release Bgm Res All");
+		for (int i = 0; i < bgm.length; i++) {
+			if (bgm[i] != null) {
+				bgm[i].setLooping(false);
+
+				// 以下の3つをセットで呼ばないとハマるらしい…
+				bgm[i].stop();
+				bgm[i].reset();
+				bgm[i].release();
+			}
+		}
+		System.gc();
 	}
 
 	/**
 	 * 更新処理
 	 */
-	public void update() {
+	public static void update() {
 		boolean oldFg = silentEnbale;
 
 		// 消音すべきモードかチェック
@@ -138,14 +228,14 @@ public class SndMgr implements OnLoadCompleteListener {
 	 *
 	 * @return trueなら有効、falseなら無効
 	 */
-	public boolean isSoundEnable() {
+	public static boolean isSoundEnable() {
 		return ((!silentEnbale) && (!soundDisable));
 	}
 
 	/**
 	 * サウンドの有効無効を切り替える
 	 */
-	public void changeSoundMode() {
+	public static void changeSoundMode() {
 		soundDisable = !soundDisable;
 		checkBgmStatus();
 	}
@@ -153,7 +243,7 @@ public class SndMgr implements OnLoadCompleteListener {
 	/**
 	 * サウンドの有効無効の切り替えに伴い、BGMの再生と停止を指定する
 	 */
-	public void checkBgmStatus() {
+	public static void checkBgmStatus() {
 		if (bgmNumber >= 0) {
 			// BGM再生中として扱うべき状態
 			if (isSoundEnable()) {
@@ -169,9 +259,9 @@ public class SndMgr implements OnLoadCompleteListener {
 	/**
 	 * 消音すべきモードかどうかを返す。
 	 */
-	public boolean checkSilentMode() {
+	public static boolean checkSilentMode() {
 		boolean fg = false;
-		switch (audioManager.getRingerMode()) {
+		switch (GWk.amgr.getRingerMode()) {
 
 		case AudioManager.RINGER_MODE_SILENT:
 			// サイレントモード
@@ -201,54 +291,14 @@ public class SndMgr implements OnLoadCompleteListener {
 	}
 
 	/**
-	 * SEデータのロードが終了した際に呼ばれる処理
+	 * SEを再生
+	 *
+	 * @param id
+	 *            SE番号
 	 */
-	@Override
-	public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-		if (status == 0) {
-			seLoadComplete = true;
-		}
-	}
-
-	/**
-	 * サウンドデータ読み込み
-	 * @param context Context
-	 */
-	public void loadSoundRes(Context context) {
-		seLoadComplete = false;
-
-		// BGMデータ読み込み
-		for (int i = 0; i < bgmResIdList.length; i++) {
-			bgm[i] = MediaPlayer.create(context,
-					bgmResIdList[i]);
-
-			// ループ再生することを指定
-			bgm[i].setLooping(true);
-
-			// ストリームタイプを指定
-			bgm[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-			// 再生のための前準備として prepare()が必要らしいのだが、
-			// SDKのバージョンによっては、create()の中で既に呼んでいるようで、
-			// もしかすると呼ぶ必要はないらしい？
-
-			// try {
-			// bgm[i].prepare();
-			// } catch (IllegalStateException e) {
-			// e.printStackTrace();
-			// } catch (IOException e) {
-			// e.printStackTrace();
-			// }
-		}
-
-		// SEデータ読み込み
-		sndPool = new SoundPool(seResIdList.length,
-				AudioManager.STREAM_MUSIC, 0);
-		sndPool.setOnLoadCompleteListener(this);
-		for (int i = 0; i < seResIdList.length; i++) {
-			seId[i] = sndPool.load(context, seResIdList[i],
-					1);
-		}
+	public static void playSe(int id) {
+		if (seLoadComplete < seResIdList.length) return;
+		if (isSoundEnable()) sndPool.play(seId[id], 1.0f, 1.0f, 0, 0, 1.0f);
 	}
 
 	/**
@@ -257,11 +307,14 @@ public class SndMgr implements OnLoadCompleteListener {
 	 * @param n
 	 *            BGM番号
 	 */
-	public void startBgm(int n) {
-		// このタイミングでseekTo()を使うと音が二重に聞こえる…
-		// bgm[n].seekTo(0);
-
-		if (isSoundEnable()) bgm[n].start();
+	public static void startBgm(int n) {
+		LogUtil.d("Snd", "start BGM "+n);
+		if ( n < 0 || n >= bgmResIdList.length) return;
+		if (isSoundEnable() && bgm[n] != null) {
+			// このタイミングでseekTo()を使うと音が二重に聞こえる…
+			// bgm[n].seekTo(0);
+			bgm[n].start();
+		}
 		bgmNumber = n;
 	}
 
@@ -271,7 +324,8 @@ public class SndMgr implements OnLoadCompleteListener {
 	 * @param mp
 	 *            MediaPlayer
 	 */
-	private void stopBgmSub(MediaPlayer mp) {
+	private static void stopBgmSub(MediaPlayer mp) {
+		if (mp == null) return;
 		if (mp.isPlaying()) {
 			mp.stop();
 
@@ -295,7 +349,8 @@ public class SndMgr implements OnLoadCompleteListener {
 	/**
 	 * BGM停止
 	 */
-	public void stopBgm() {
+	public static void stopBgm() {
+		LogUtil.d("Snd", "stop BGM " + bgmNumber);
 		if (bgmNumber < 0) return;
 		stopBgmSub(bgm[bgmNumber]);
 		bgmNumber = -1;
@@ -304,7 +359,8 @@ public class SndMgr implements OnLoadCompleteListener {
 	/**
 	 * 全てのBGMを停止
 	 */
-	public void stopBgmAll() {
+	public static void stopBgmAll() {
+		LogUtil.d("Snd", "stop BGM All");
 		for (int i = 0; i < bgm.length; i++) {
 			stopBgmSub(bgm[i]);
 		}
@@ -314,9 +370,10 @@ public class SndMgr implements OnLoadCompleteListener {
 	/**
 	 * BGMを一時停止
 	 */
-	public void pauseBgm() {
+	public static void pauseBgm() {
+		LogUtil.d("Snd", "pause BGM " + bgmNumber);
 		if (bgmNumber < 0) return;
-		if (bgm[bgmNumber].isPlaying()) {
+		if (bgm[bgmNumber] != null && bgm[bgmNumber].isPlaying()) {
 			bgm[bgmNumber].pause();
 		}
 	}
@@ -324,32 +381,23 @@ public class SndMgr implements OnLoadCompleteListener {
 	/**
 	 * BGMの再開
 	 */
-	public void restartBgm() {
+	public static void resumeBgm() {
+		LogUtil.d("Snd", "resume BGM " + bgmNumber);
 		if (bgmNumber < 0) return;
-		if (isSoundEnable()) bgm[bgmNumber].start();
+		if (isSoundEnable() && bgm[bgmNumber] != null) {
+			bgm[bgmNumber].start();
+		}
 	}
 
 	/**
 	 * BGMの変更
-	 * @param id BGM番号
+	 *
+	 * @param id
+	 *            BGM番号
 	 */
-	public void changeBgm(int id) {
+	public static void changeBgm(int id) {
 		stopBgm();
 		startBgm(id);
-	}
-
-	/**
-	 * 全BGMデータを解放
-	 */
-	public void releaseBgmAll() {
-		for (int i = 0; i < bgm.length; i++) {
-			bgm[i].setLooping(false);
-
-			// 以下の3つをセットで呼ばないとハマるらしい…
-			bgm[i].stop();
-			bgm[i].reset();
-			bgm[i].release();
-		}
 	}
 
 	/**
@@ -357,7 +405,7 @@ public class SndMgr implements OnLoadCompleteListener {
 	 *
 	 * @return 次のBGM番号
 	 */
-	public int getNextBgmId() {
+	public static int getNextBgmId() {
 		final int[] list = {
 				BGM_FIRST, BGM_MILD, BGM_BOSS
 		};
@@ -368,29 +416,4 @@ public class SndMgr implements OnLoadCompleteListener {
 		return n;
 	}
 
-	/**
-	 * SEを再生
-	 *
-	 * @param id
-	 *            SE番号
-	 */
-	public void playSe(int id) {
-		if (!seLoadComplete) return;
-		if (isSoundEnable())
-			sndPool.play(seId[id], 1.0f, 1.0f, 0, 0, 1.0f);
-	}
-
-	/**
-	 * 全SEデータを解放
-	 */
-	public void releaseSeAll() {
-		for (int i = 0; i < seResIdList.length; i++) {
-			int id = seId[i];
-			sndPool.stop(id);
-			sndPool.unload(id);
-		}
-		sndPool.release();
-	}
-
 }
-

@@ -5,14 +5,14 @@ import java.util.Random;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.media.AudioManager;
 import android.os.Vibrator;
+import android.view.Window;
 
 /**
  * グローバル変数相当
  */
-public class GWk {
-	private static GWk instance = new GWk();
-
+final class GWk {
 	// 目標FPS
 	public final static long FPS_VALUE = 60;
 	public final static long INTERVAL = (1000 * 1000 * 1000) / FPS_VALUE;
@@ -22,93 +22,85 @@ public class GWk {
 	public final static int DEF_SCR_H = 320;
 
 	// setFixedSize()を使うかどうか
-	public boolean fixedSizeEnable;
+	public static boolean fixedSizeEnable;
 
 	// 極力拡大縮小しない描画処理をするか否か
-	public boolean disableScaleDraw;
+	public static boolean disableScaleDraw;
 
 	// 実機上の実画面サイズ
-	public int scrW;
-	public int scrH;
+	public static int scrW, scrH;
 
 	// 仮想実画面サイズ
-	public int virtualScrW;
-	public int virtualScrH;
+	public static int virtualScrW, virtualScrH;
 
 	// 拡大縮小して余った領域を塗り潰すための、幅、高さの記録用
-	public int screenBorderW;
-	public int screenBorderH;
+	public static int screenBorderW, screenBorderH;
 
 	// 画面の拡大縮小率
-	public float scaleX;
-	public float scaleY;
+	public static float scaleX, scaleY;
 
 	// BG0,BG1,雑魚敵の描画有効無効
-	public boolean[] layerDrawEnable = new boolean[3];
+	public static boolean[] layerDrawEnable = new boolean[3];
 
-	public Vibrator vib; // バイブレーション機能関係
-	public Random rnd = new Random(); // 乱数
+	public static Vibrator vib; // バイブレーション機能関係
+	public static AudioManager amgr; // サイレントモード判別用
+	public static Random rnd = new Random(); // 乱数
 
 	// 実際に取得したタッチ座標
-	public float touchRealX;
-	public float touchRealY;
+	public static float touchRealX,touchRealY;
 
 	// 拡大縮小を加味したタッチ座標
-	public float touchX;
-	public float touchY;
-	public boolean touchEnable;
+	public static float touchX, touchY;
+	public static boolean touchEnable;
 
 	// タッチ座標を描画するためのワーク
-	public int drawTouchAlpha = 0;
-	public int drawTouchRadius = 0;
-	public Point touchPoint = new Point();
+	public static int drawTouchAlpha = 0;
+	public static int drawTouchRadius = 0;
+	public static Point touchPoint = new Point();
 
 	// ミスした回数
-	public int miss = 0;
-	public boolean missEnable = false;
+	public static int miss = 0;
+	public static boolean missEnable = false;
 
 	// 時間記録用(単位：ms)
-	public long diffMilliTime = 0;
-	public long lastDiffMilliTime = 0;
+	public static long diffMilliTime = 0;
+	public static long lastDiffMilliTime = 0;
 
 	// キャラの数
-	public int charaCount = 0;
+	public static int charaCount = 0;
 
 	// レベルが変わったかどうか
-	public boolean levelChangeEnable;
-	public int level;
+	public static boolean levelChangeEnable;
+	public static int level;
 
 	// フレームカウンタ
-	public long frameCounter;
+	public static long frameCounter = 0;
 
 	// スローモーション表示
 	// 0より大きければ、設定されたフレーム数分、スローモーションになる。
-	public int slowMotionCount = 0;
+	public static int slowMotionCount = 0;
 
 	// オプションメニューを開いているか否か
-	public boolean enableOpenMenu;
+	public static boolean enableOpenMenu = false;
 
-	Paint paint = new Paint();
+	public static Paint paint = new Paint();
+
+	public static Window window;
 
 	/**
 	 * コンストラクタ
 	 */
-	private GWk() {
+	public GWk() {
 		fixedSizeEnable = false;
 		disableScaleDraw = false;
 		levelChangeEnable = false;
-		enableOpenMenu = false;
 		level = 0;
-	}
-
-	public static GWk getInstance() {
-		return instance;
 	}
 
 	/**
 	 * タッチ情報をクリア
 	 */
-	public void clearTouchInfo() {
+	public static void clearTouchInfo() {
 		touchX = touchY = 0;
 		touchEnable = false;
 	}
@@ -116,7 +108,7 @@ public class GWk {
 	/**
 	 * タッチ情報(描画用情報も含む)をクリア
 	 */
-	public void clearTouchDrawInfo() {
+	public static void clearTouchDrawInfo() {
 		touchX = touchY = 0;
 		drawTouchAlpha = 0;
 	}
@@ -153,7 +145,7 @@ public class GWk {
 	 * @param bgcolor
 	 *            縁取り色(Volor.WHITE等)
 	 */
-	public void drawTextWidthBorder(Canvas c, String s, int x, int y,
+	public static void drawTextWidthBorder(Canvas c, String s, int x, int y,
 			int fgcolor, int bgcolor) {
 		paint.setAlpha(255);
 		paint.setAntiAlias(true);
@@ -169,4 +161,5 @@ public class GWk {
 		paint.setColor(fgcolor);
 		c.drawText(s, x + 0, y + 0, paint);
 	}
+
 }

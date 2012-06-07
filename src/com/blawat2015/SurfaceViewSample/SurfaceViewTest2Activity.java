@@ -2,6 +2,8 @@ package com.blawat2015.SurfaceViewSample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Process;
@@ -52,45 +54,83 @@ public final class SurfaceViewTest2Activity extends Activity {
 		GWk.window = getWindow();
 
 		// SurfaceViewを生成
-		setContentView(new MySurfaceView(this));
+		setContentView(new MySurfaceView(getApplicationContext()));
 	}
 
 	@Override
 	protected void onStart() {
-		LogUtil.d("Activity", "onStart Activity");
 		super.onStart();
+		LogUtil.d("Activity", "onStart Activity");
 	}
 
 	@Override
 	protected void onResume() {
+		super.onResume();
 		LogUtil.d("Activity", "onResume Activity");
 		Snd.resumeBgm();
-		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
+		super.onPause();
 		LogUtil.d("Activity", "onPause Activity");
 		Snd.pauseBgm();
-		super.onPause();
 	}
 
 	@Override
 	protected void onRestart() {
-		LogUtil.d("Activity", "onRestart Activity");
 		super.onRestart();
+		LogUtil.d("Activity", "onRestart Activity");
 	}
 
 	@Override
 	protected void onStop() {
-		LogUtil.d("Activity", "onStop Activity");
 		super.onStop();
+		LogUtil.d("Activity", "onStop Activity");
 	}
 
 	@Override
 	protected void onDestroy() {
-		LogUtil.d("Activity", "onDestroy Activity");
 		super.onDestroy();
+		LogUtil.d("Activity", "onDestroy Activity");
+
+		// 何の理由で破棄されたか調べる
+		int chg = getChangingConfigurations();
+		LogUtil.d("Activity",
+				"getChg :" + chg + " (" + String.format("0x%08x", chg) + ")");
+		if ( chg == 0) {
+			// 戻るボタンや「EXIT」で終わった可能性大
+			LogUtil.d("Activity", "push Back Button?");
+			Snd.stopBgm();
+			Snd.releaseSoundResAll();
+			Img.releaseImageResAll();
+			GameMgr.init();
+		} else if ((chg & ActivityInfo.CONFIG_ORIENTATION) != 0) {
+			// 画面の向きが変わった
+			LogUtil.d("Activity", "change Orientation");
+		} else {
+			// それ以外
+			LogUtil.d("Activity", "Unknown");
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		LogUtil.d("Activity", "onSaveInstanceState Activity");
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		LogUtil.d("Activity", "onRestoreInstanceState Activity");
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// 画面の向きが変わった時に呼ばれるはずなのだが、呼ばれない…
+		super.onConfigurationChanged(newConfig);
+		LogUtil.d("Activity", "onConfigurationChanged Activity");
 	}
 
 	/**
@@ -98,7 +138,7 @@ public final class SurfaceViewTest2Activity extends Activity {
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		Option.createOptionMenu(menu); // オプションメニュー生成
+		Option.createMenu(menu); // オプションメニュー生成
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -127,14 +167,15 @@ public final class SurfaceViewTest2Activity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		boolean ret = true;
 
-		switch( Option.selectedItem(item) ) {
+		switch (Option.selectedItem(item)) {
 		case 0:
 			break;
 		case 1:
 			// 終了処理(プロセスを殺す版)
-			Snd.pauseBgm();
-			Img.releaseImageResAll();
+			Snd.stopBgm();
 			Snd.releaseSoundResAll();
+			Img.releaseImageResAll();
+			GameMgr.init();
 			super.onDestroy();
 			Process.killProcess(Process.myPid());
 			break;

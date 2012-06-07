@@ -45,7 +45,6 @@ class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 		Main.saveScreenWH(width, height); // 画面の縦横幅を取得かつ記録
 	}
 
-
 	/**
 	 * SurfaceViewが破棄された時に呼ばれる処理
 	 */
@@ -86,4 +85,3 @@ class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 		return true;
 	}
 }
-

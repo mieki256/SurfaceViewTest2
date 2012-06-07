@@ -13,7 +13,7 @@ public class Bg extends Task {
 	/**
 	 * BGの描画領域を記録するためのクラス
 	 */
-	public class BgRect {
+	private static class BgRect {
 		public int w, h;
 		public boolean drawEnable;
 		public Rect src, dst;

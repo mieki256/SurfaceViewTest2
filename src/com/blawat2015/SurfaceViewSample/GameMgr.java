@@ -19,7 +19,20 @@ final class GameMgr {
 	private static Paint paint = new Paint();
 
 	private GameMgr() {
+		init();
+	}
+
+	public static void init() {
 		step = 0;
+		GWk.miss = 0;
+		GWk.slowMotionCount = 0;
+		Snd.stopBgm();
+	}
+
+	public static void init2() {
+		step = 2;
+		GWk.diffMilliTime = 0;
+		GWk.lastDiffMilliTime = 0;
 		GWk.miss = 0;
 		GWk.slowMotionCount = 0;
 	}
@@ -60,9 +73,7 @@ final class GameMgr {
 			for (int i = 0; i < GWk.layerDrawEnable.length; i++)
 				GWk.layerDrawEnable[i] = true;
 
-			GWk.diffMilliTime = 0;
-			GWk.lastDiffMilliTime = 0;
-			step++;
+			init2();
 			break;
 
 		case 2:
@@ -106,7 +117,7 @@ final class GameMgr {
 					bg1.onUpdate();
 					enemyMgr.onUpdate();
 					if (!stgClr.onUpdate()) {
-						Snd.stopBgmAll();
+						Snd.stopBgm();
 						step = 2;
 					}
 				}

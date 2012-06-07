@@ -25,16 +25,16 @@ final class Main {
 		Main.view = view;
 		Snd.checkSilentMode(); // 消音すべきモードかチェック
 		FpsCount.init();
+
 		mExec = Executors.newSingleThreadScheduledExecutor();
 		mExec.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
-				// この中が一定時間毎に処理される
-				// LogUtil.d("SURFACE_LOOP", "loop");
+				// この中が、一定時間毎(INTERVAL ナノ秒間隔)で処理される
+				// LogUtil.d("Main_run", "main loop");
 				Main.runLoop();
 			}
 		}, 0, GWk.INTERVAL, TimeUnit.NANOSECONDS);
-		// INTERVALの間隔で処理が行われる
 
 		LogUtil.d("Main", "start thread");
 	}
@@ -124,8 +124,11 @@ final class Main {
 
 	/**
 	 * 現在の画面サイズを記録する
-	 * @param width 画面横幅
-	 * @param height 画面縦幅
+	 *
+	 * @param width
+	 *            画面横幅
+	 * @param height
+	 *            画面縦幅
 	 */
 	public static void saveScreenWH(int width, int height) {
 		if (GWk.fixedSizeEnable) {
@@ -149,7 +152,7 @@ final class Main {
 		Display disp = GWk.window.getWindowManager().getDefaultDisplay();
 		p.x = disp.getWidth();
 		p.y = disp.getHeight();
-		LogUtil.d("Main", "get Window size "+p.x +","+p.y);
+		LogUtil.d("Main", "get Window size " + p.x + "," + p.y);
 		return p;
 	}
 

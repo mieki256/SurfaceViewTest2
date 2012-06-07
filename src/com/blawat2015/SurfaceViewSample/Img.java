@@ -1,6 +1,5 @@
 package com.blawat2015.SurfaceViewSample;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.SurfaceView;
@@ -47,7 +46,6 @@ final class Img {
 	};
 
 	public static Bitmap[] bmp = new Bitmap[imgId.length];
-	private static Resources resources;
 
 	/**
 	 * コンストラクタ
@@ -61,12 +59,11 @@ final class Img {
 	 */
 	public static void init(final SurfaceView view) {
 		LogUtil.d("Img", "init Img");
-		resources = view.getResources();
 
 		LogUtil.d("Img", "load Images");
 		for (int i = 0; i < imgId.length; i++) {
 			if (bmp[i] == null || bmp[i].isRecycled() )
-				bmp[i] = BitmapFactory.decodeResource(resources, imgId[i]);
+				bmp[i] = BitmapFactory.decodeResource(view.getResources(), imgId[i]);
 		}
 	}
 

@@ -70,7 +70,6 @@ final class Snd {
 			SE_VOICE_WAA, SE_VOICE_WHEU, SE_VOICE_WII,
 	};
 
-	private static Context context;
 	private static MediaPlayer[] bgm;
 	private static int[] seId; // SE(SoundPoll)ID記録用
 	private static SoundPool sndPool;
@@ -127,7 +126,7 @@ final class Snd {
 
 		LogUtil.d("Snd", "init Snd");
 
-		context = view.getContext();
+		Context context = view.getContext();
 		bgm = new MediaPlayer[bgmResIdList.length];
 		seId = new int[seResIdList.length];
 		sndPool = null;
@@ -183,6 +182,8 @@ final class Snd {
 	 * 全サウンドデータを解放
 	 */
 	public static void releaseSoundResAll() {
+		if(first) return;
+
 		LogUtil.d("Snd", "release Se Res All");
 		if (sndPool != null) {
 			for (int i = 0; i < seResIdList.length; i++) {
@@ -206,6 +207,9 @@ final class Snd {
 			}
 		}
 		System.gc();
+
+		first = true;
+		initWk();
 	}
 
 	/**

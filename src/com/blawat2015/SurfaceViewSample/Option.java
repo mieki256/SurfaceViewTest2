@@ -24,7 +24,7 @@ final class Option {
 	 * オプションメニューを生成
 	 * @param menu Menu
 	 */
-	public static void createOptionMenu(Menu menu) {
+	public static void createMenu(Menu menu) {
 		// ID番号のリスト
 		// R.string.xxxx は、res/values/strins.xml で定義してある
 		final int[][] idList = {
@@ -156,8 +156,8 @@ final class Option {
 			Snd.changeSoundMode();
 			break;
 		case MENU_ID_BGMOFF:
-			// BGM全停止
-			Snd.stopBgmAll();
+			// BGM停止
+			Snd.stopBgm();
 			break;
 		case MENU_ID_BGMCHG:
 			// BGM変更

@@ -140,7 +140,7 @@ public class ZakoChara extends Task {
 				dy *= -1;
 			}
 
-			if (GWk.frameCounter % 8 == 0) {
+			if (GWk.frameCounter % 16 == 0) {
 				// アニメパターン番号を1つ進める
 				patNum++;
 				patNum %= 2;

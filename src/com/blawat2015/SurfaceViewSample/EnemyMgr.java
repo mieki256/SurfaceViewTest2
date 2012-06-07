@@ -41,7 +41,8 @@ public class EnemyMgr extends Task {
 			taskList.get(i).init();
 
 		startTime = nowTime = System.currentTimeMillis();
-		GWk.lastDiffMilliTime = GWk.diffMilliTime = 0;
+		GWk.diffMilliTime = 0;
+		GWk.lastDiffMilliTime = 0;
 	}
 
 	/**

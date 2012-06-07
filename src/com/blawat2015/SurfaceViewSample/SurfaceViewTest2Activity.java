@@ -21,12 +21,9 @@ import android.view.WindowManager;
  */
 public final class SurfaceViewTest2Activity extends Activity {
 
-	/**
-	 * Activityが生成された時の処理.
-	 * <p>
-	 * アプリ起動時に最初に呼ばれる. 画面の縦横を切替えた時も呼ばれる模様.
-	 * </p>
-	 */
+	// Activityが生成された時の処理.
+	// ここが最初に呼ばれる.
+	// 通常、画面の向きを変えた時も呼ばれる.
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,18 +60,21 @@ public final class SurfaceViewTest2Activity extends Activity {
 		LogUtil.d("Activity", "onStart Activity");
 	}
 
+	// リジューム時に呼ばれる処理
+	// 初回起動時もここを通ることに注意
 	@Override
 	protected void onResume() {
 		super.onResume();
 		LogUtil.d("Activity", "onResume Activity");
-		Snd.resumeBgm();
+		Snd.resumeBgm(); // BGM再生再開
 	}
 
+	// 一時停止された時に呼ばれる処理
 	@Override
 	protected void onPause() {
 		super.onPause();
 		LogUtil.d("Activity", "onPause Activity");
-		Snd.pauseBgm();
+		Snd.pauseBgm(); // BGM一時停止
 	}
 
 	@Override
@@ -89,22 +89,26 @@ public final class SurfaceViewTest2Activity extends Activity {
 		LogUtil.d("Activity", "onStop Activity");
 	}
 
+	// Activityが破棄される時に呼ばれる処理.
+	// 通常、何も設定しなければ、画面の向きが変わった時もここを通る.
+	// (画面の向きが切り替わる度に、Activityの破棄と生成が行われる)
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		LogUtil.d("Activity", "onDestroy Activity");
 
-		// 何の理由で破棄されたか調べる
+		// 何の経緯で破棄されたのかを調べる
 		int chg = getChangingConfigurations();
 		LogUtil.d("Activity",
 				"getChg :" + chg + " (" + String.format("0x%08x", chg) + ")");
-		if ( chg == 0) {
-			// 戻るボタンや「EXIT」で終わった可能性大
+
+		if (chg == 0) {
+			// 戻るボタンや「EXIT」で終わった可能性が高い
 			LogUtil.d("Activity", "push Back Button?");
-			Snd.stopBgm();
-			Snd.releaseSoundResAll();
-			Img.releaseImageResAll();
-			GameMgr.init();
+			Snd.stopBgm(); // BGM停止
+			Snd.releaseSoundResAll(); // サウンドデータの解放
+			Img.releaseImageResAll(); // 画像データの解放
+			GameMgr.init(); // 次回起動したときのためにワークを初期化
 		} else if ((chg & ActivityInfo.CONFIG_ORIENTATION) != 0) {
 			// 画面の向きが変わった
 			LogUtil.d("Activity", "change Orientation");
@@ -126,43 +130,43 @@ public final class SurfaceViewTest2Activity extends Activity {
 		LogUtil.d("Activity", "onRestoreInstanceState Activity");
 	}
 
+	// 画面の向きが変わった時に呼ばれる処理
+	//
+	// 通常、ここは呼ばれないが、
+	// AndroidManifest.xml の <Activity > 内に、
+	// android:configChanges="orientation|keyboardHidden"
+	// の記述を追加することで、呼ばれるようになる。
+	//
+	// 上記は Android 2.x 以前の記述内容で、
+	// Andoroid 3.x 以降は記述内容が変わっている模様.
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		// 画面の向きが変わった時に呼ばれるはずなのだが、呼ばれない…
 		super.onConfigurationChanged(newConfig);
 		LogUtil.d("Activity", "onConfigurationChanged Activity");
 	}
 
-	/**
-	 * メニューボタンが押された時のオプションメニュー表示
-	 */
+	// メニューボタンが押された時のオプションメニュー表示
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Option.createMenu(menu); // オプションメニュー生成
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	/**
-	 * オプションメニューが開かれた際に呼ばれる処理
-	 */
+	// オプションメニューが開かれた際に呼ばれる処理
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		Option.prepareMenu(menu);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
-	/**
-	 * オプションメニューが閉じられた際に呼ばれる処理
-	 */
+	// オプションメニューが閉じられた際に呼ばれる処理
 	@Override
 	public void onOptionsMenuClosed(Menu menu) {
 		Option.closeMenu();
 		super.onOptionsMenuClosed(menu);
 	}
 
-	/**
-	 * オプションメニューアイテムが選択された時の処理
-	 */
+	// オプションメニュー内のアイテムが選択された時の処理
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		boolean ret = true;

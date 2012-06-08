@@ -11,7 +11,9 @@
 
 ### スクリーンショット
 
-github wiki の ScreenShot を参照のこと。
+[github wiki の ScreenShot][screenshot]を参照のこと。
+
+[screenshot]: https://github.com/mieki256/SurfaceViewTest2/wiki/ScreenShot
 
 ### 描画内容
 

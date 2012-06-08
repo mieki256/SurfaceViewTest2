@@ -15,6 +15,7 @@
 
 [screenshot]: https://github.com/mieki256/SurfaceViewTest2/wiki/ScreenShot
 
+<embed type="application/x-shockwave-flash" src="https://picasaweb.google.com/s/c/bin/slideshow.swf" width="288" height="192" flashvars="host=picasaweb.google.com&hl=ja&feat=flashalbum&RGB=0x000000&feed=https%3A%2F%2Fpicasaweb.google.com%2Fdata%2Ffeed%2Fapi%2Fuser%2F117102804899776354958%2Falbumid%2F5751558383979532353%3Falt%3Drss%26kind%3Dphoto%26hl%3Dja" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed>
 
 ### オプションメニューについて
 

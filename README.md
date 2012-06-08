@@ -15,6 +15,7 @@
 
 [screenshot]: https://github.com/mieki256/SurfaceViewTest2/wiki/ScreenShot
 
+
 ### 描画内容
 
 * 基準画面サイズは、240x320ドット。これを、縦横比を維持して拡大縮小、フルスクリーン表示している。

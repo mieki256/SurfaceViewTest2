@@ -38,12 +38,12 @@ Lenovo IdeaPad A1では以下の結果になった。
 
 ## スクリーンショット
 
-![タイトル画面](./screenshot/ss_20120608_01.png)
+![タイトル画面](http://cloud.github.com/downloads/mieki256/SurfaceViewTest2/SurfaceViewTest2_ss_1.png)
 
-![ゲーム画面1](./screenshot/ss_20120608_02.png)
+![ゲーム画面1](http://cloud.github.com/downloads/mieki256/SurfaceViewTest2/SurfaceViewTest2_ss_2.png)
 
-![ゲーム画面2](./screenshot/ss_20120608_03.png)
+![ゲーム画面2](http://cloud.github.com/downloads/mieki256/SurfaceViewTest2/SurfaceViewTest2_ss_3.png)
 
-![オプションメニュー](./screenshot/ss_20120608_04.png)
+![オプションメニュー](http://cloud.github.com/downloads/mieki256/SurfaceViewTest2/SurfaceViewTest2_ss_4.png)
 
-![クリア画面](./screenshot/ss_20120608_05.png)
+![クリア画面](http://cloud.github.com/downloads/mieki256/SurfaceViewTest2/SurfaceViewTest2_ss_5.png)

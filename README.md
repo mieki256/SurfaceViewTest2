@@ -11,26 +11,9 @@
 
 ### スクリーンショット
 
-<div>
-<link rel="stylesheet" href="https://dl.dropbox.com/u/84075965/js/colorbox/colorbox.css" />
-<link rel="stylesheet" href="https://dl.dropbox.com/u/84075965/js/colorbox/floatlist.css" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="https://dl.dropbox.com/u/84075965/js/colorbox/jquery.colorbox-min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-$(".slshow").colorbox({rel:'slshow', transition:"fade", speed:100});
-$(".single").colorbox();
-});
-</script>
-<ul class="floatlist">
-<li><a class="slshow" href="https://dl.dropbox.com/u/84075965/screenshot/SurfaceViewTest2/SurfaceViewTest2_ss_1.png" title="タイトル画面"><img src="thumb1.png" /></a></li>
-<li><a class="slshow" href="https://dl.dropbox.com/u/84075965/screenshot/SurfaceViewTest2/SurfaceViewTest2_ss_2.png" title="ゲーム画面1"><img src="thumb2.png" /></a></li>
-<li><a class="slshow" href="https://dl.dropbox.com/u/84075965/screenshot/SurfaceViewTest2/SurfaceViewTest2_ss_3.png" title="ゲーム画面2"><img src="thumb3.png" /></a></li>
-<li><a class="slshow" href="https://dl.dropbox.com/u/84075965/screenshot/SurfaceViewTest2/SurfaceViewTest2_ss_5.png" title="クリア画面"><img src="thumb5.png" /></a></li>
-<li><a class="slshow" href="https://dl.dropbox.com/u/84075965/screenshot/SurfaceViewTest2/SurfaceViewTest2_ss_4.png" title="オプションメニュー"><img src="thumb4.png" /></a></li>
-</ul>
-<p class="clearLeft"></p>
-</div>
+[github wiki - ScreenShot][screenshot] を参照のこと。
+
+[screenshot]: https://github.com/mieki256/SurfaceViewTest2/wiki/ScreenShot
 
 ### オプションメニューについて
 
